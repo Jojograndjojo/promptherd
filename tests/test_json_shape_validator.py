@@ -28,3 +28,7 @@ class TestJsonShapeValidator(unittest.TestCase):
 
         self.assertIsNone(result.error)
         self.assertTrue(result.valid)
+
+    def test_id(self):
+        validator = JsonShapeValidator()
+        self.assertEqual(validator.id(), "json_shape")
