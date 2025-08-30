@@ -63,7 +63,7 @@ class TestLlm(unittest.TestCase):
         )
 
     @patch("llm.llm.embedding")
-    def test_embed(self, mock_embedding):
+    def test_embedding(self, mock_embedding):
         produced_embeddings = [0, 1, 1, 1]
         prompt_tokens = 10
         total_tokens = 10
@@ -77,10 +77,38 @@ class TestLlm(unittest.TestCase):
         }
         mock_embedding.return_value = produced_response
         embedding_input = "test input"
-        embeddings, response = self.llm.embed(embedding_input=embedding_input)
+        embeddings, response = self.llm.embedding(embedding_input=embedding_input)
         self.assertEqual(embeddings, produced_embeddings)
         self.assertEqual(response, produced_response)
         self.assertEqual(self.llm.total_tokens, total_tokens)
         mock_embedding.assert_called_with(
             model=self.llm.embedding_model, input=embedding_input
         )
+
+    @patch("llm.llm.completion")
+    def test_generate(self, mock_completion):
+        returned_content = "test response"
+        total_tokens = 41
+        produced_response = {
+            "choices": [
+                {
+                    "finish_reason": "stop",
+                    "index": 0,
+                    "message": {"role": "assistant", "content": returned_content},
+                }
+            ],
+            "created": 1691429984.3852863,
+            "model": "claude-instant-1",
+            "usage": {
+                "prompt_tokens": 18,
+                "completion_tokens": 23,
+                "total_tokens": total_tokens,
+            },
+        }
+        mock_completion.return_value = produced_response
+        messages = [{"role": "user", "content": "Hey!"}]
+        result, response = self.llm.completion(messages=messages)
+        self.assertEqual(result, returned_content)
+        self.assertEqual(response, produced_response)
+        self.assertEqual(self.llm.total_tokens, total_tokens)
+        mock_completion.assert_called_with(model=self.llm.llm_model, messages=messages)

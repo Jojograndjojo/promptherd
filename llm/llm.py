@@ -1,6 +1,6 @@
 import os
 from llm.providers import Provider
-from litellm import embedding
+from litellm import embedding, completion
 
 
 class Llm:
@@ -12,10 +12,15 @@ class Llm:
         self.embedding_model = config.get("embedding_model", "")
         self.total_tokens = 0
 
-    def embed(self, embedding_input: str) -> tuple[list, dict]:
+    def embedding(self, embedding_input: str) -> tuple[list, dict]:
         response = embedding(model=self.embedding_model, input=embedding_input)
         self.total_tokens += response["usage"]["total_tokens"]
         return response["data"][0]["embedding"], response
+
+    def completion(self, messages: list[dict]) -> tuple[list, dict]:
+        response = completion(model=self.llm_model, messages=messages)
+        self.total_tokens += response["usage"]["total_tokens"]
+        return response["choices"][0]["message"]["content"], response
 
 
 def _validate_config(provider: Provider, config: dict):
