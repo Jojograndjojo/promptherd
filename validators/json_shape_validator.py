@@ -4,9 +4,10 @@ from typing import Any
 
 from jsonschema import validate, ValidationError
 from models.validation import Response
+from validators.prompt_validator import PromptValidator
 
 
-class JsonShapeValidator:
+class JsonShapeValidator(PromptValidator):
     def __init__(self, schema: dict | None = None):
         self.schema = schema
 
