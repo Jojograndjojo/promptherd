@@ -5,7 +5,7 @@ from validators.json_shape_validator import JsonShapeValidator
 
 
 class TestJsonShapeValidator(unittest.TestCase):
-    @patch("validators.json_validator.json")
+    @patch("validators.json_shape_validator.json")
     def test_returns_validation_error_if_json_does_not_load(self, mock_json):
         json_loading_error = json.JSONDecodeError("JSON does not load", "", 0)
 
@@ -18,7 +18,7 @@ class TestJsonShapeValidator(unittest.TestCase):
         self.assertEqual(result.error, "JSON does not load: line 1 column 1 (char 0)")
         self.assertFalse(result.valid)
 
-    @patch("validators.json_validator.json")
+    @patch("validators.json_shape_validator.json")
     def test_returns_valid_validation_if_json_loads(self, mock_json):
         mock_json.loads.return_value = {}
         content = "result"
