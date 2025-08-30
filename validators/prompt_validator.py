@@ -7,5 +7,5 @@ class PromptValidator(ABC):
         pass
 
     @abstractmethod
-    def validate(self, prompt: str) -> dict:
+    def validate(self, content: str) -> dict:
         pass

@@ -7,20 +7,30 @@ from models.validation import Response
 
 
 class JsonShapeValidator:
-    def __init__(self):
-        pass
+    def __init__(self, schema: dict | None = None):
+        self.schema = schema
 
     def id(self) -> str:
         return "json_shape"
 
-    def validate(self, content: str, schema: dict | None = None) -> Response:
+    def validate(self, content: str) -> Response:
         """validate if a string is valid json"""
         response, loaded_json = _validate_is_json(content)
         if not response.valid:
             return response
 
-        if schema:
-            response = _validate_against_schema(loaded_json=loaded_json, schema=schema)
+        if self.schema:
+            response = self._validate_against_schema(loaded_json=loaded_json)
+        return response
+
+    def _validate_against_schema(self, loaded_json: Any) -> Response:
+        try:
+            validate(instance=loaded_json, schema=self.schema)
+            response = Response(valid=True, error=None)
+        except ValidationError as e:
+            response = Response(
+                valid=False, error=f"Invalid JSON Properties: {e.message}"
+            )
         return response
 
 
@@ -30,12 +40,3 @@ def _validate_is_json(content: str) -> tuple[Response, Any] | tuple[Response, No
         return Response(valid=True, error=None), loaded_json
     except JSONDecodeError as e:
         return Response(False, f"Invalid JSON: {e}"), None
-
-
-def _validate_against_schema(loaded_json: Any, schema: dict) -> Response:
-    try:
-        validate(instance=loaded_json, schema=schema)
-        response = Response(valid=True, error=None)
-    except ValidationError as e:
-        response = Response(valid=False, error=f"Invalid JSON Properties: {e.message}")
-    return response

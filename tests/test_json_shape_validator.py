@@ -43,9 +43,9 @@ class TestJsonShapeValidator(unittest.TestCase):
             "additionalProperties": False,
         }
         content = '{"name":"george"}'
-        validator = JsonShapeValidator()
+        validator = JsonShapeValidator(schema=schema)
 
-        response = validator.validate(content=content, schema=schema)
+        response = validator.validate(content=content)
         self.assertEqual(
             response.error,
             "Invalid JSON Properties: Additional properties are not allowed ('name' was unexpected)",
