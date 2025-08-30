@@ -1,14 +1,21 @@
 import os
 from llm.providers import Provider
+from litellm import embedding
 
 
 class Llm:
     def __init__(self, provider: Provider, config: dict):
         _validate_config(provider=provider, config=config)
         _set_environment_variables(provider=provider, config=config)
-        self.api_key = config["api_key"]
-        self.llm_model = config["llm_model"]
-        self.embedding_model = config["embedding_model"]
+        self.api_key = config.get("api_key", "")
+        self.llm_model = config.get("llm_model", "")
+        self.embedding_model = config.get("embedding_model", "")
+        self.total_tokens = 0
+
+    def embed(self, embedding_input: str) -> tuple[list, dict]:
+        response = embedding(model=self.embedding_model, input=embedding_input)
+        self.total_tokens += response["usage"]["total_tokens"]
+        return response["data"][0]["embedding"], response
 
 
 def _validate_config(provider: Provider, config: dict):
