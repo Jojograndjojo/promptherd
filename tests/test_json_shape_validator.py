@@ -15,7 +15,9 @@ class TestJsonShapeValidator(unittest.TestCase):
         validator = JsonShapeValidator()
         result = validator.validate(content=content)
 
-        self.assertEqual(result.error, "JSON does not load: line 1 column 1 (char 0)")
+        self.assertEqual(
+            result.error, "Invalid JSON: JSON does not load: line 1 column 1 (char 0)"
+        )
         self.assertFalse(result.valid)
 
     @patch("validators.json_shape_validator.json")
@@ -28,6 +30,27 @@ class TestJsonShapeValidator(unittest.TestCase):
 
         self.assertIsNone(result.error)
         self.assertTrue(result.valid)
+
+    def test_returns_validation_error_if_json_does_not_respect_schema(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "description": {"type": "string"},
+                "status": {"type": "boolean"},
+                "value_a": {"type": "number"},
+                "value_b": {"type": "number"},
+            },
+            "additionalProperties": False,
+        }
+        content = '{"name":"george"}'
+        validator = JsonShapeValidator()
+
+        response = validator.validate(content=content, schema=schema)
+        self.assertEqual(
+            response.error,
+            "Invalid JSON Properties: Additional properties are not allowed ('name' was unexpected)",
+        )
+        self.assertFalse(response.valid)
 
     def test_id(self):
         validator = JsonShapeValidator()
