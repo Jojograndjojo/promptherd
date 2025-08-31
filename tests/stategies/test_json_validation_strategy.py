@@ -84,3 +84,42 @@ class TestJsonValidationStrategy(unittest.TestCase):
             benchmark_content=self.benchmark_content,
         )
         mock_max_length_validator.assert_called_with(max_chars=self.max_chars)
+
+    @patch("strategies.json_validation_strategy.JsonShapeValidator")
+    @patch("strategies.json_validation_strategy.EmbeddingsSimilarityValidator")
+    def test_init_with_no_max_chars(
+        self, mock_embeddings_similarity_validator, mock_json_shape_validator
+    ):
+        json_shape_validator_response = Response(valid=True, error=None)
+        json_shape_validator_id = "json_shape_validator_id"
+        json_shape_validator = MagicMock()
+        json_shape_validator.validate.return_value = json_shape_validator_response
+        json_shape_validator.id.return_value = json_shape_validator_id
+        mock_json_shape_validator.return_value = json_shape_validator
+
+        embeddings_similarity_validator_response = Response(
+            valid=False, error="Just not valid"
+        )
+        embeddings_similarity_validator_id = "embeddings_similarity_validator_id"
+        embeddings_similarity_validator = MagicMock()
+        embeddings_similarity_validator.validate.return_value = (
+            embeddings_similarity_validator_response
+        )
+        embeddings_similarity_validator.id.return_value = (
+            embeddings_similarity_validator_id
+        )
+        mock_embeddings_similarity_validator.return_value = (
+            embeddings_similarity_validator
+        )
+
+        strategy = JSONValidationStrategy(
+            llm=self.llm,
+            schema=self.schema,
+            max_chars=None,
+            threshold=self.threshold,
+            benchmark_content=self.benchmark_content,
+        )
+
+        validator_ids = [validator.id() for validator in strategy.validators]
+
+        self.assertNotIn("max_length", validator_ids)

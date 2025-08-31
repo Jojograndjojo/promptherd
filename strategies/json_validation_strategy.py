@@ -11,24 +11,29 @@ class JSONValidationStrategy(ValidationStrategy):
         self,
         llm: Llm,
         schema: dict,
-        max_chars: int,
+        max_chars: int | None,
         threshold: float,
         benchmark_content: str,
     ):
         self.benchmark_content = benchmark_content
         self.threshold = threshold
         json_shape_validator = JsonShapeValidator(schema=schema)
-        max_length_validator = MaxLengthValidator(max_chars=max_chars)
         embeddings_similarity_validator = EmbeddingsSimilarityValidator(
             benchmark_content=benchmark_content,
             llm=llm,
             threshold=threshold,
         )
-        self.validators = [
+        validators: list[
+            JsonShapeValidator | EmbeddingsSimilarityValidator | MaxLengthValidator
+        ] = [
             json_shape_validator,
-            max_length_validator,
             embeddings_similarity_validator,
         ]
+        if max_chars is not None:
+            max_length_validator = MaxLengthValidator(max_chars=max_chars)
+            validators.append(max_length_validator)
+
+        self.validators = validators
 
     def run(self, content: str) -> ValidationResult:
         results = {
