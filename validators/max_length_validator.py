@@ -3,8 +3,8 @@ from models.validation import Response
 
 
 class MaxLengthValidator(PromptValidator):
-    def __init__(self, max_length):
-        self.max_length = max_length
+    def __init__(self, max_chars):
+        self.max_length = max_chars
 
     def id(self) -> str:
         """id of the validator"""

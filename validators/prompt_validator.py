@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from models.validation import Response
 
 
 class PromptValidator(ABC):
@@ -7,5 +8,5 @@ class PromptValidator(ABC):
         pass
 
     @abstractmethod
-    def validate(self, content: str) -> dict:
+    def validate(self, content: str) -> Response:
         pass
