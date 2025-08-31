@@ -12,6 +12,7 @@ class JsonShapeValidator(PromptValidator):
         self.schema = schema
 
     def id(self) -> str:
+        """id of the validator"""
         return "json_shape"
 
     def validate(self, content: str) -> Response:

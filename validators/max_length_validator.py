@@ -7,9 +7,11 @@ class MaxLengthValidator(PromptValidator):
         self.max_length = max_length
 
     def id(self) -> str:
+        """id of the validator"""
         return "max_length"
 
     def validate(self, content: str) -> Response:
+        """validate if a string is valid json"""
         if len(content) <= self.max_length:
             return Response(valid=True, error=None)
         else:
