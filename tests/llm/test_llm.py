@@ -2,11 +2,18 @@ import unittest
 from llm.llm import Llm
 from llm.providers import Provider
 from unittest.mock import patch
+from config.config import Config
 
 
 class TestLlmOpenAI(unittest.TestCase):
     def test_init_fails_if_no_api_key_in_config(self):
-        config = {"llm_model": "test", "embedding_model": "test"}
+        config = Config(
+            llm_model="test",
+            embedding_model="test",
+            api_key="",
+            provider="",
+            additional_config={},
+        )
 
         with self.assertRaises(ValueError) as context:
             Llm(provider=Provider.OPENAI, config=config)
@@ -15,7 +22,13 @@ class TestLlmOpenAI(unittest.TestCase):
         )
 
     def test_init_fails_if_no_llm_model_in_config(self):
-        config = {"api_key": "test", "embedding_model": "test"}
+        config = Config(
+            llm_model="",
+            embedding_model="test",
+            api_key="api_key",
+            provider="",
+            additional_config={},
+        )
 
         with self.assertRaises(ValueError) as context:
             Llm(provider=Provider.OPENAI, config=config)
@@ -24,7 +37,13 @@ class TestLlmOpenAI(unittest.TestCase):
         )
 
     def test_init_fails_if_no_embedding_model_in_config(self):
-        config = {"api_key": "test", "llm_model": "test"}
+        config = Config(
+            llm_model="test",
+            embedding_model="",
+            api_key="api_key",
+            provider="",
+            additional_config={},
+        )
 
         with self.assertRaises(ValueError) as context:
             Llm(provider=Provider.OPENAI, config=config)
@@ -38,11 +57,13 @@ class TestLlmOpenAI(unittest.TestCase):
         llm_model = "test_llm_model"
         embedding_model = "test_embedding_model"
 
-        config = {
-            "api_key": api_key,
-            "llm_model": llm_model,
-            "embedding_model": embedding_model,
-        }
+        config = Config(
+            api_key=api_key,
+            llm_model=llm_model,
+            embedding_model=embedding_model,
+            provider="",
+            additional_config={},
+        )
 
         llm = Llm(provider=Provider.OPENAI, config=config)
 
@@ -56,10 +77,13 @@ class TestLlm(unittest.TestCase):
     def setUp(self):
         self.llm = Llm(
             provider=Provider.DUMMY,
-            config={
-                "llm_model": "test_llm_model",
-                "embedding_model": "test_embedding_model",
-            },
+            config=Config(
+                llm_model="test_llm_model",
+                embedding_model="test_embedding_model",
+                api_key="",
+                provider="",
+                additional_config={},
+            ),
         )
 
     @patch("llm.llm.embedding")
