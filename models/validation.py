@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+import yaml
+from dataclasses import dataclass, asdict
 
 
 @dataclass
@@ -14,3 +15,7 @@ class ValidationResult:
     benchmark_content: str
     threshold: float
     results: dict[str, Response]
+
+    def to_yaml(self) -> str:
+        yaml_str = yaml.dump(asdict(self), sort_keys=False)
+        return yaml_str
