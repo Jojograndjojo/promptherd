@@ -13,11 +13,13 @@ class Llm:
         self.total_tokens = 0
 
     def embedding(self, embedding_input: str) -> tuple[list, dict]:
+        """returns vector embeddings representation of a string and the full embeddings response"""
         response = embedding(model=self.embedding_model, input=embedding_input)
         self.total_tokens += response["usage"]["total_tokens"]
         return response["data"][0]["embedding"], response
 
     def completion(self, messages: list[dict]) -> tuple[list, dict]:
+        """returns a string response and the full completion response"""
         response = completion(model=self.llm_model, messages=messages)
         self.total_tokens += response["usage"]["total_tokens"]
         return response["choices"][0]["message"]["content"], response
